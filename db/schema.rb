@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_08_130018) do
+ActiveRecord::Schema[7.0].define(version: 2024_10_31_183318) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,6 +52,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_130018) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "customers", force: :cascade do |t|
+    t.string "name"
+    t.integer "phone"
+    t.string "mail"
+    t.text "address"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "friendly_id_slugs", force: :cascade do |t|
     t.string "slug", null: false
     t.integer "sluggable_id", null: false
@@ -61,6 +70,76 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_130018) do
     t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
     t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
     t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "menu_items", force: :cascade do |t|
+    t.string "name"
+    t.float "price"
+    t.string "category"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "order_items", force: :cascade do |t|
+    t.integer "quantity"
+    t.float "price"
+    t.bigint "order_id", null: false
+    t.bigint "menu_item_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["menu_item_id"], name: "index_order_items_on_menu_item_id"
+    t.index ["order_id"], name: "index_order_items_on_order_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.datetime "date"
+    t.float "total_price"
+    t.string "status"
+    t.bigint "customer_id", null: false
+    t.bigint "table_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["table_id"], name: "index_orders_on_table_id"
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.datetime "date"
+    t.string "method"
+    t.float "amount"
+    t.bigint "order_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_payments_on_order_id"
+  end
+
+  create_table "reservations", force: :cascade do |t|
+    t.datetime "date"
+    t.integer "number_of_people"
+    t.string "status"
+    t.bigint "customer_id", null: false
+    t.bigint "table_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_reservations_on_customer_id"
+    t.index ["table_id"], name: "index_reservations_on_table_id"
+  end
+
+  create_table "staffs", force: :cascade do |t|
+    t.string "name"
+    t.string "position"
+    t.integer "phone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tables", force: :cascade do |t|
+    t.integer "number"
+    t.integer "capacity"
+    t.string "location"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -80,4 +159,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_08_130018) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "order_items", "menu_items"
+  add_foreign_key "order_items", "orders"
+  add_foreign_key "orders", "customers"
+  add_foreign_key "orders", "tables"
+  add_foreign_key "payments", "orders"
+  add_foreign_key "reservations", "customers"
+  add_foreign_key "reservations", "tables"
 end

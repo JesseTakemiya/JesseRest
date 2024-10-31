@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  date: 2024-10-31 17:09:44
+  total_price: 1.5
+  status: MyString
+  customer: one
+  table: one
+
+two:
+  date: 2024-10-31 17:09:44
+  total_price: 1.5
+  status: MyString
+  customer: two
+  table: two
